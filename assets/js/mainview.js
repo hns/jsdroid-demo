@@ -1,0 +1,34 @@
+var {Color, Paint} = Packages.android.graphics;
+
+var dots = [];
+var colors = [Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN];
+
+view.setOnTouchListener(function(view, event) {
+    var count = Math.min(event.getPointerCount(), 4);
+    for (var i = 0; i < count; i++) {
+        dots.push({x: event.getX(i), y: event.getY(i), color: colors[i]});
+    }
+    view.invalidate();
+    return true;
+});
+
+function onDraw(canvas) {
+    canvas.drawColor(Color.BLACK);
+    var paint = new Paint();
+    paint.setStyle(Paint.Style.STROKE);
+    paint.setStyle(Paint.Style.FILL);
+    paint.setAntiAlias(true);
+
+    var length = dots.length;
+    if (length > 100) {
+        // truncate dots every once in a while
+        dots = dots.slice(-50);
+        length = 50;
+    }
+
+    for (var i = Math.max(length - 50, 0); i < length; i++) {
+        paint.setColor(dots[i].color);
+        paint.setAlpha(255 - (length - i) * 5);
+        canvas.drawCircle(dots[i].x, dots[i].y, 20, paint);
+    }
+}
