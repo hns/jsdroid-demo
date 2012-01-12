@@ -1,13 +1,29 @@
 var {Color, Paint} = Packages.android.graphics;
 
-var MAXDOTS = 50;
+var MAXDOTS = 100;
 var dots = [];
 var colors = [Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN];
 
 view.setOnTouchListener(function(view, event) {
     var count = Math.min(event.getPointerCount(), 4);
+    var hist = event.getHistorySize();
+    // process batched events
     for (var i = 0; i < count; i++) {
-        dots.push({x: event.getX(i), y: event.getY(i), color: colors[i]});
+        for (var h = 0; h < hist; h++) {
+            dots.push({
+                x: event.getHistoricalX(i, h),
+                y: event.getHistoricalY(i, h),
+                color: colors[i]
+            });
+        }
+    }
+    // process last event
+    for (i = 0; i < count; i++) {
+        dots.push({
+            x: event.getX(i),
+            y: event.getY(i),
+            color: colors[i]
+        });
     }
     view.invalidate();
     return true;
