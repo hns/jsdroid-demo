@@ -1,5 +1,6 @@
 var {Color, Paint} = Packages.android.graphics;
 
+var MAXDOTS = 50;
 var dots = [];
 var colors = [Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN];
 
@@ -20,15 +21,15 @@ function onDraw(canvas) {
     paint.setAntiAlias(true);
 
     var length = dots.length;
-    if (length > 100) {
+    if (length > MAXDOTS + 20) {
         // truncate dots every once in a while
-        dots = dots.slice(-50);
-        length = 50;
+        dots = dots.slice(-MAXDOTS);
+        length = MAXDOTS;
     }
 
-    for (var i = Math.max(length - 50, 0); i < length; i++) {
+    for (var i = Math.max(length - MAXDOTS, 0); i < length; i++) {
         paint.setColor(dots[i].color);
-        paint.setAlpha(255 - (length - i) * 5);
+        paint.setAlpha(255 - (length - i) * 255 / MAXDOTS);
         canvas.drawCircle(dots[i].x, dots[i].y, 20, paint);
     }
 }
