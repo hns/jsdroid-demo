@@ -1,10 +1,14 @@
+/*
+ * Android app that paints multi-touch traces using nice vivid colors.
+ */
+
 var {Color, Paint} = Packages.android.graphics;
 
 var MAXDOTS = 100;
 var dots = [];
 var colors = [Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN];
 
-view.setOnTouchListener(function(view, event) {
+view.on("touch", function(event) {
     var count = Math.min(event.getPointerCount(), 4);
     var hist = event.getHistorySize();
     // process batched events
@@ -29,7 +33,7 @@ view.setOnTouchListener(function(view, event) {
     return true;
 });
 
-function onDraw(canvas) {
+view.on("draw", function (canvas) {
     canvas.drawColor(Color.BLACK);
     var paint = new Paint();
     paint.setStyle(Paint.Style.STROKE);
@@ -48,4 +52,4 @@ function onDraw(canvas) {
         paint.setAlpha(255 - (length - i) * 255 / MAXDOTS);
         canvas.drawCircle(dots[i].x, dots[i].y, 20, paint);
     }
-}
+});
