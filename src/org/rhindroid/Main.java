@@ -1,39 +1,16 @@
 package org.rhindroid;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 
-public class Main extends Activity
-{
-    private ScriptedView view;
+public class Main extends Activity {
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = new ScriptedView(this);
-        setContentView(view);
-        initScript();
-    }
-
-    private void initScript() {
-        final ProgressDialog loadingDialog = ProgressDialog.show(
-                this, null, "Loading...", true, false);
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    ScriptUtils.initScriptEngine();
-                    ScriptUtils.defineProperty("view", view);
-                    ScriptUtils.evaluate("js/view.js", getAssets());
-                } catch (Exception iox) {
-                    throw new RuntimeException(iox);
-                } finally {
-                    loadingDialog.dismiss();
-                }
-            }
-        }).start();
+        ScriptUtils.initScriptEngine(getAssets());
+        setContentView(new ScriptedView(this));
     }
 
 }

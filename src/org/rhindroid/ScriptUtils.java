@@ -4,6 +4,8 @@ import android.content.res.AssetManager;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.WrapFactory;
@@ -16,29 +18,40 @@ import java.io.Reader;
 public class ScriptUtils {
 
     static ContextFactory contextFactory;
-    static ScriptableObject scope;
+    static ScriptableObject global;
+    static AssetManager assets;
 
-    public static void initScriptEngine() {
+    public static void initScriptEngine(AssetManager assetManager) {
+        assets = assetManager;
         contextFactory = new ContextFactory();
-        scope = (ScriptableObject) contextFactory.call(new ContextAction() {
+        global = (ScriptableObject) contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 return cx.initStandardObjects();
             }
         });
     }
 
-    public static void defineProperty(final String name, final Object value) {
+    public static ScriptableObject createScope() {
+        ScriptableObject scope = new NativeObject();
+        scope.setPrototype(global);
+        return scope;
+    }
+
+    public static void defineProperty(final Scriptable scope,
+                                      final String name,
+                                      final Object value) {
         contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 WrapFactory wrapFactory = cx.getWrapFactory();
                 Object wrapped = wrapFactory.wrap(cx, scope, value, null);
-                scope.defineProperty (name, wrapped, ScriptableObject.READONLY);
+                scope.put(name, scope, wrapped);
                 return null;
             }
         });
     }
 
-    public static Object evaluate(final String source, final AssetManager assets) {
+    public static Object evaluate(final Scriptable scope,
+                                  final String source) {
         Object result = contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 cx.setOptimizationLevel(-1);
@@ -55,7 +68,9 @@ public class ScriptUtils {
         return unwrap(result);
     }
 
-    public static Object invoke(final Function fn, final Object... args) {
+    public static Object invoke(final Scriptable scope,
+                                final Function fn,
+                                final Object... args) {
         Object result = contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 WrapFactory wrapFactory = cx.getWrapFactory();
