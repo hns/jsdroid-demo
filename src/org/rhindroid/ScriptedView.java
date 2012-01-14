@@ -9,31 +9,32 @@ import org.mozilla.javascript.ScriptRuntime;
 
 public class ScriptedView extends View {
 
-    Function drawHandler;
+    enum Events {touch, draw}
+    Function[] callbacks = new Function[Events.values().length];
 
     public ScriptedView(Context context) {
         super(context);
     }
 
     public void on(String type, final Function callback) {
-        if (type.equals("touch")) {
-            setOnTouchListener(new OnTouchListener() {
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    Object result = ScriptUtils.invoke(callback, motionEvent);
-                    return ScriptRuntime.toBoolean(result);
-                }
-            });
-        } else if (type.equals("draw")) {
-            drawHandler = callback;
+        callbacks[Events.valueOf(type).ordinal()] = callback;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Function callback = callbacks[Events.touch.ordinal()];
+        if (callback != null) {
+            return ScriptRuntime.toBoolean(ScriptUtils.invoke(callback, event));
         } else {
-            throw new IllegalArgumentException("Unknown event: " + type);
+            return super.onTouchEvent(event);
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (drawHandler != null) {
-            ScriptUtils.invoke(drawHandler, canvas);
+        Function callback = callbacks[Events.draw.ordinal()];
+        if (callback != null) {
+            ScriptUtils.invoke(callback, canvas);
         } else {
             super.onDraw(canvas);
         }

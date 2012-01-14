@@ -15,10 +15,10 @@ public class Main extends Activity
         super.onCreate(savedInstanceState);
         view = new ScriptedView(this);
         setContentView(view);
-        init();
+        initScript();
     }
-    
-    private void init() {
+
+    private void initScript() {
         final ProgressDialog loadingDialog = ProgressDialog.show(
                 this, null, "Loading...", true, false);
         new Thread(new Runnable() {
