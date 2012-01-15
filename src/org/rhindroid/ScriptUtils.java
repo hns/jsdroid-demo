@@ -26,7 +26,12 @@ public class ScriptUtils {
         contextFactory = new ContextFactory();
         global = (ScriptableObject) contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
-                return cx.initStandardObjects();
+                ScriptableObject scope = cx.initStandardObjects();
+                // Define top-level android package for convenience
+                Scriptable packages = (Scriptable) scope.get("Packages", scope);
+                Object android = packages.get("android", packages);
+                scope.defineProperty("android", android, ScriptableObject.DONTENUM);
+                return scope;
             }
         });
     }

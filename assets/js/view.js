@@ -2,7 +2,7 @@
  * Android app that paints multi-touch traces using nice vivid colors.
  */
 
-var {Color, Paint} = Packages.android.graphics;
+var {Color, Paint} = android.graphics;
 
 var MAXDOTS = 100;
 var dots = [];
