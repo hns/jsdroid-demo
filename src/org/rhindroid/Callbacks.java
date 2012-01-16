@@ -11,6 +11,12 @@ import org.mozilla.javascript.Wrapper;
 
 import java.util.EnumMap;
 
+/**
+ * A utility class for storing and invoking callback functions. Callbacks
+ * are associated with the values of an enum type.
+ *
+ * @param <T> the enum specifying the supported event types
+ */
 public class Callbacks<T extends Enum<T>> {
 
     public static final Object UNHANDLED = new Object();
@@ -21,29 +27,67 @@ public class Callbacks<T extends Enum<T>> {
         map = new EnumMap<T, Function>(clazz);
     }
 
+    /**
+     * Create a new Callbacks object for the given enum type.
+     * @param c the enum class
+     * @param <T> the enum type parameter
+     * @return an empty Callbacks object
+     */
     public static <T extends Enum<T>> Callbacks<T> create(Class<T> c) {
         return new Callbacks<T>(c);
     }
 
-    public boolean contains(T item) {
-        return map.containsKey(item);
+    /**
+     * Returns true if this instance contains a callback for event
+     * <code>event</code>.
+     * @param event the event type
+     * @return true if a callback is available for the given event
+     */
+    public boolean contains(T event) {
+        return map.containsKey(event);
     }
 
-    public Function get(T item) {
-        return map.get(item);
+    /**
+     * Returns the callback function registered for event <code>event</code>.
+     * @param event the event type
+     * @return the callback function, or null
+     */
+    public Function get(T event) {
+        return map.get(event);
     }
 
-    public void put(T item, Function func) {
-        map.put(item, func);
+    /**
+     * Registers a callback for event <code>event</code>.
+     * @param event the event type
+     * @param func the callback function
+     */
+    public void put(T event, Function func) {
+        map.put(event, func);
     }
 
-    public Object invoke(final T item, final Object... args) {
-        if (!map.containsKey(item)) {
+    /**
+     * Removes all registered callbacks.
+     */
+    public void clear() {
+        map.clear();
+    }
+
+    /**
+     * Invokes the callback registered for event <code>event</code>.
+     * Returns the value returned by the function, or {@link #UNHANDLED}
+     * if no callback is registered for the event.
+     * @param event the event type
+     * @param args the arguments
+     * @return the return value, or <code>UNHANDLED</code> if no callback is
+     * registered
+     */
+    public Object invoke(final T event, final Object... args) {
+        if (!map.containsKey(event)) {
             return UNHANDLED;
         }
         Object result = ContextFactory.getGlobal().call(new ContextAction() {
             public Object run(Context cx) {
-                Function fn = map.get(item);
+                Function fn = map.get(event);
                 Scriptable scope = fn.getParentScope();
                 WrapFactory wrapFactory = cx.getWrapFactory();
                 for (int i = 0; i < args.length; i++) {
