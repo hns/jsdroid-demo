@@ -3,6 +3,7 @@ package org.rhindroid;
 import android.content.res.AssetManager;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrapFactory;
@@ -13,22 +14,27 @@ import java.io.Reader;
 
 public class ScriptBuilder {
 
-    ScriptableObject scope;
+    private static Scriptable global;
+    private ScriptableObject scope;
 
     public ScriptBuilder() {
-        ContextFactory contextFactory = ContextFactory.getGlobal();
-        scope = (ScriptableObject) contextFactory.call(new ContextAction() {
-            public Object run(org.mozilla.javascript.Context cx) {
-                return cx.initStandardObjects();
-            }
-        });
+        if (global == null) {
+            ContextFactory contextFactory = ContextFactory.getGlobal();
+            global = (ScriptableObject) contextFactory.call(new ContextAction() {
+                public Object run(org.mozilla.javascript.Context cx) {
+                    return cx.initStandardObjects();
+                }
+            });
+        }
+        scope = new NativeObject();
+        scope.setPrototype(global);
     }
 
     public ScriptBuilder defineAndroidPackage() {
         ContextFactory.getGlobal().call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 // Define top-level android package for convenience
-                Scriptable packages = (Scriptable) scope.get("Packages", scope);
+                Scriptable packages = (Scriptable) global.get("Packages", global);
                 Object android = packages.get("android", packages);
                 scope.defineProperty("android", android, ScriptableObject.DONTENUM);
                 return null;
