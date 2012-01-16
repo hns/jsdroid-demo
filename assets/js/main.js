@@ -1,3 +1,7 @@
+/**
+ * Main activity showing a list of available demos
+ */
+
 var {ArrayAdapter} = android.widget;
 var {Intent} = android.content;
 

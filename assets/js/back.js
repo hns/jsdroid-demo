@@ -1,4 +1,6 @@
-// generic code for handling app icon click in nested activities
+/**
+ * Generic code for handling app icon click in nested activities
+ */
 
 var {Intent} = android.content;
 
