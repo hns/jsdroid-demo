@@ -1,5 +1,5 @@
 /*
- * Android app that paints multi-touch traces using nice vivid colors.
+ * Android app that paints dotted multi-touch traces using nice vivid colors.
  */
 
 var {Color, Paint} = android.graphics;
@@ -9,6 +9,7 @@ var MAXDOTS = 100;
 var dots = [];
 var colors = [Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN];
 
+// called when the activity is created
 activity.on("create", function(bundle) {
     var array = activity.getLastNonConfigurationInstance();
     if (array) {
@@ -18,10 +19,21 @@ activity.on("create", function(bundle) {
     }
 });
 
+// called to allow retaining state when the activity is stopped
 activity.on("retain", function() {
     return dots;
 });
 
+// called when an options menu item is selected
+activity.on("select", function(menuItem) {
+    if (menuItem.getItemId() ==  android.R.id.home) {
+        // click on the app icon in action bar, clear screen
+        dots.length = 0;
+        view.invalidate();
+    }
+});
+
+// set touch event handler on the view
 view.on("touch", function(event) {
     var count = Math.min(event.getPointerCount(), 4);
     var hist = event.getHistorySize();
@@ -47,6 +59,7 @@ view.on("touch", function(event) {
     return true;
 });
 
+// called when the view should be (re)drawn
 view.on("draw", function (canvas) {
     canvas.drawColor(Color.BLACK);
     var paint = new Paint();

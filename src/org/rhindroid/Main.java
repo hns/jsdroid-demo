@@ -4,21 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
 
-import java.util.Map;
 
 public class Main extends Activity {
 
-    enum OnActivity {create, pause, retain}
-    enum OnView {touch, draw}
+    enum ActivityEvent {create, pause, retain, select}
+    enum ViewEvent {touch, draw}
 
-    Map<OnActivity,Function> callbacks = Callbacks.map(OnActivity.class);
-    Scriptable scope;
+    Callbacks<ActivityEvent> callbacks = Callbacks.create(ActivityEvent.class);
 
     /** Called when the activity is first created. */
     @Override
@@ -26,52 +24,52 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         View view = new ScriptedView(this);
         setContentView(view);
-        scope = ScriptUtils.createScope();
-        ScriptUtils.defineProperty(scope, "activity", this);
-        ScriptUtils.defineProperty(scope, "view", view);
-        ScriptUtils.evaluate("js/view.js", scope, getAssets());
-        Function callback = callbacks.get(OnActivity.create);
-        if (callback != null) {
-            ScriptUtils.invoke(scope, callback, savedInstanceState);
-        }
+        new ScriptBuilder()
+                .defineAndroidPackage()
+                .defineGlobal("activity", this)
+                .defineGlobal("view", view)
+                .evaluate("js/view.js", getAssets());
+        callbacks.invoke(ActivityEvent.create, savedInstanceState);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Function callback = callbacks.get(OnActivity.pause);
-        if (callback != null) {
-            ScriptUtils.invoke(scope, callback);
-        }
+        callbacks.invoke(ActivityEvent.pause);
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        Function callback = callbacks.get(OnActivity.retain);
-        return (callback != null) ? ScriptUtils.invoke(scope, callback) : null;
+        return callbacks.invoke(ActivityEvent.retain);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        callbacks.invoke(ActivityEvent.select, menuItem);
+        return super.onOptionsItemSelected(menuItem);
     }
 
     public void on(String type, final Function callback) {
-        callbacks.put(OnActivity.valueOf(type), callback);
+        callbacks.put(ActivityEvent.valueOf(type), callback);
     }
 
     public class ScriptedView extends View {
 
-        Map<OnView,Function> callbacks = Callbacks.map(OnView.class);
+        Callbacks<ViewEvent> callbacks = Callbacks.create(ViewEvent.class);
 
         public ScriptedView(Context context) {
             super(context);
         }
 
         public void on(String type, final Function callback) {
-            callbacks.put(OnView.valueOf(type), callback);
+            callbacks.put(ViewEvent.valueOf(type), callback);
         }
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            Function callback = callbacks.get(OnView.touch);
-            if (callback != null) {
-                return ScriptRuntime.toBoolean(ScriptUtils.invoke(scope, callback, event));
+            if (callbacks.contains(ViewEvent.touch)) {
+                Object result = callbacks.invoke(ViewEvent.touch, event);
+                return ScriptRuntime.toBoolean(result);
             } else {
                 return super.onTouchEvent(event);
             }
@@ -79,9 +77,8 @@ public class Main extends Activity {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            Function callback = callbacks.get(OnView.draw);
-            if (callback != null) {
-                ScriptUtils.invoke(scope, callback, canvas);
+            if (callbacks.contains(ViewEvent.draw)) {
+                callbacks.invoke(ViewEvent.draw, canvas);
             } else {
                 super.onDraw(canvas);
             }
