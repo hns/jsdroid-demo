@@ -19,10 +19,8 @@ public class ScriptUtils {
 
     static ContextFactory contextFactory;
     static ScriptableObject global;
-    static AssetManager assets;
 
-    public static void initScriptEngine(AssetManager assetManager) {
-        assets = assetManager;
+    public static void initScriptEngine() {
         contextFactory = new ContextFactory();
         global = (ScriptableObject) contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
@@ -37,6 +35,9 @@ public class ScriptUtils {
     }
 
     public static ScriptableObject createScope() {
+        if (global == null) {
+            initScriptEngine();
+        }
         ScriptableObject scope = new NativeObject();
         scope.setPrototype(global);
         return scope;
@@ -55,8 +56,9 @@ public class ScriptUtils {
         });
     }
 
-    public static Object evaluate(final Scriptable scope,
-                                  final String source) {
+    public static Object evaluate(final String source,
+                                  final Scriptable scope,
+                                  final AssetManager assets) {
         Object result = contextFactory.call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 cx.setOptimizationLevel(-1);

@@ -3,10 +3,24 @@
  */
 
 var {Color, Paint} = android.graphics;
+var {Toast} = android.widget;
 
 var MAXDOTS = 100;
 var dots = [];
 var colors = [Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN];
+
+activity.on("create", function(bundle) {
+    var array = activity.getLastNonConfigurationInstance();
+    if (array) {
+        dots = array;
+    } else {
+        Toast.makeText(activity, "Ready!", Toast.LENGTH_SHORT).show();
+    }
+});
+
+activity.on("retain", function() {
+    return dots;
+});
 
 view.on("touch", function(event) {
     var count = Math.min(event.getPointerCount(), 4);
