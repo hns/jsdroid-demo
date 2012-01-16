@@ -20,51 +20,42 @@ import java.io.Reader;
  */
 public class ScriptBuilder {
 
-    private static Scriptable global;
+    private static ScriptableObject global;
 
+    private AssetManager assets;
     private ScriptableObject scope;
     private int languageVersion;
 
     /**
      * Create a ScriptBuilder with JavaScript version 1.8.
+     * @param assets the asset manager to retrieve the source
      */
-    public ScriptBuilder() {
-        this(Context.VERSION_1_8);
+    public ScriptBuilder(AssetManager assets) {
+        this(assets, Context.VERSION_1_8);
     }
 
     /**
      * Create a ScriptBuilder with the given JavaScript language version.
+     * @param assets the asset manager to retrieve the source
      * @param languageVersion the JS version
      */
-    public ScriptBuilder(int languageVersion) {
+    public ScriptBuilder(AssetManager assets, int languageVersion) {
+        this.assets = assets;
         this.languageVersion = languageVersion;
         if (global == null) {
-            ContextFactory contextFactory = ContextFactory.getGlobal();
-            global = (ScriptableObject) contextFactory.call(new ContextAction() {
+            ContextFactory.getGlobal().call(new ContextAction() {
                 public Object run(org.mozilla.javascript.Context cx) {
-                    return cx.initStandardObjects();
+                    global = cx.initStandardObjects();
+                    // Define a top level shortcut for the android java package.
+                    Scriptable packages = (Scriptable) global.get("Packages", global);
+                    Object android = packages.get("android", packages);
+                    global.defineProperty("android", android, ScriptableObject.DONTENUM);
+                    return null;
                 }
             });
         }
         scope = new NativeObject();
         scope.setPrototype(global);
-    }
-
-    /**
-     * Define a top level property for the <code>android</code> java package.
-     * @return this ScriptBuilder
-     */
-    public ScriptBuilder defineAndroidPackage() {
-        ContextFactory.getGlobal().call(new ContextAction() {
-            public Object run(org.mozilla.javascript.Context cx) {
-                // Define top-level android package for convenience
-                Scriptable packages = (Scriptable) global.get("Packages", global);
-                Object android = packages.get("android", packages);
-                scope.defineProperty("android", android, ScriptableObject.DONTENUM);
-                return null;
-            }
-        });
-        return this;
     }
 
     /**
@@ -89,11 +80,9 @@ public class ScriptBuilder {
     /**
      * Evaluate a script
      * @param source the source path
-     * @param assets the asset manager to retrieve the source
      * @return this ScriptBuilder
      */
-    public ScriptBuilder evaluate(final String source,
-                                  final AssetManager assets) {
+    public ScriptBuilder evaluate(final String source) {
         ContextFactory.getGlobal().call(new ContextAction() {
             public Object run(org.mozilla.javascript.Context cx) {
                 cx.setOptimizationLevel(-1);

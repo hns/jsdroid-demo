@@ -15,22 +15,13 @@ activity.on("create", function(bundle) {
     if (array) {
         dots = array;
     } else {
-        Toast.makeText(activity, "Ready!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Touch the screen!", Toast.LENGTH_SHORT).show();
     }
 });
 
 // called to allow retaining state when the activity is stopped
 activity.on("retain", function() {
     return dots;
-});
-
-// called when an options menu item is selected
-activity.on("select", function(menuItem) {
-    if (menuItem.getItemId() ==  android.R.id.home) {
-        // click on the app icon in action bar, clear screen
-        dots.length = 0;
-        view.invalidate();
-    }
 });
 
 // set touch event handler on the view

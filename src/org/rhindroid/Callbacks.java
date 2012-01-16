@@ -13,7 +13,7 @@ import java.util.EnumMap;
 
 /**
  * A utility class for storing and invoking callback functions. Callbacks
- * are associated with the values of an enum type.
+ * are associated with event types represented by an enum type.
  *
  * @param <T> the enum specifying the supported event types
  */
