@@ -5,7 +5,7 @@ package org.rhindroid;
  */
 public class Events {
 
-    public enum Activity {create, pause, retain, select, click}
+    public enum Activity {create, retain, select, click}
 
     public enum View {touch, draw}
 

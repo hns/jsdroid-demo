@@ -30,12 +30,6 @@ public class Dots extends Activity implements CallbackHolder {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        callbacks.invoke(Events.Activity.pause);
-    }
-
-    @Override
     public Object onRetainNonConfigurationInstance() {
         return callbacks.invoke(Events.Activity.retain);
     }
