@@ -1,14 +1,13 @@
-package org.rhindroid;
+package org.jsdroid.demo;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+import org.jsdroid.CallbackHolder;
+import org.jsdroid.Callbacks;
+import org.jsdroid.ScriptBuilder;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ScriptRuntime;
 
 
 public class Dots extends Activity implements CallbackHolder {
@@ -19,13 +18,14 @@ public class Dots extends Activity implements CallbackHolder {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = new ScriptedView(this);
-        setContentView(view);
+        setContentView(R.layout.dots);
+        View view = findViewById(R.id.view);
         new ScriptBuilder(getAssets())
                 .defineGlobal("activity", this)
                 .defineGlobal("view", view)
                 .evaluate("js/dots.js")
-                .evaluate("js/back.js");
+                .evaluate("js/back.js")
+                .evaluate("js/viewSource.js");
         callbacks.invoke(Events.Activity.create, savedInstanceState);
     }
 
@@ -44,33 +44,4 @@ public class Dots extends Activity implements CallbackHolder {
         callbacks.put(Events.Activity.valueOf(event), callback);
     }
 
-}
-
-class ScriptedView extends View implements CallbackHolder {
-
-    Callbacks<Events.View> callbacks = Callbacks.create(Events.View.class);
-
-    public ScriptedView(Context context) {
-        super(context);
-    }
-
-    public void on(String event, final Function callback) {
-        callbacks.put(Events.View.valueOf(event), callback);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Object result = callbacks.invoke(Events.View.touch, event);
-        if (result != Callbacks.UNHANDLED) {
-            return ScriptRuntime.toBoolean(result);
-        }
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        if (callbacks.invoke(Events.View.draw, canvas) == Callbacks.UNHANDLED) {
-            super.onDraw(canvas);
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package org.rhindroid;
+package org.jsdroid.demo;
 
 /**
  * Enums of events used by scripts in this app.

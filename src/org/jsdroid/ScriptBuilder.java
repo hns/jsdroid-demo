@@ -1,4 +1,4 @@
-package org.rhindroid;
+package org.jsdroid;
 
 import android.content.res.AssetManager;
 import org.mozilla.javascript.Context;

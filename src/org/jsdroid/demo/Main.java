@@ -1,9 +1,12 @@
-package org.rhindroid;
+package org.jsdroid.demo;
 
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import org.jsdroid.CallbackHolder;
+import org.jsdroid.Callbacks;
+import org.jsdroid.ScriptBuilder;
 import org.mozilla.javascript.Function;
 
 public class Main extends ListActivity implements CallbackHolder {
@@ -12,10 +15,11 @@ public class Main extends ListActivity implements CallbackHolder {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list);
+        setContentView(R.layout.main);
         new ScriptBuilder(getAssets())
                 .defineGlobal("activity", this)
-                .evaluate("js/main.js");
+                .evaluate("js/main.js")
+                .evaluate("js/viewSource.js");
         callbacks.invoke(Events.Activity.create, savedInstanceState);
     }
 

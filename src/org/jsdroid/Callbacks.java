@@ -1,4 +1,4 @@
-package org.rhindroid;
+package org.jsdroid;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
