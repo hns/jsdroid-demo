@@ -11,11 +11,9 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
 
 
-public class Main extends Activity {
+public class Main extends Activity implements CallbackHolder {
 
     enum ActivityEvent {create, pause, retain, select}
-    enum ViewEvent {touch, draw}
-
     Callbacks<ActivityEvent> callbacks = Callbacks.create(ActivityEvent.class);
 
     /** Called when the activity is first created. */
@@ -49,40 +47,38 @@ public class Main extends Activity {
         return super.onOptionsItemSelected(menuItem);
     }
 
-    public void on(String type, final Function callback) {
-        callbacks.put(ActivityEvent.valueOf(type), callback);
+    public void on(String event, final Function callback) {
+        callbacks.put(ActivityEvent.valueOf(event), callback);
     }
 
-    public class ScriptedView extends View {
+}
 
-        Callbacks<ViewEvent> callbacks = Callbacks.create(ViewEvent.class);
+class ScriptedView extends View implements CallbackHolder {
 
-        public ScriptedView(Context context) {
-            super(context);
-        }
+    enum ViewEvent {touch, draw}
+    Callbacks<ViewEvent> callbacks = Callbacks.create(ViewEvent.class);
 
-        public void on(String type, final Function callback) {
-            callbacks.put(ViewEvent.valueOf(type), callback);
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            if (callbacks.contains(ViewEvent.touch)) {
-                Object result = callbacks.invoke(ViewEvent.touch, event);
-                return ScriptRuntime.toBoolean(result);
-            } else {
-                return super.onTouchEvent(event);
-            }
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            if (callbacks.contains(ViewEvent.draw)) {
-                callbacks.invoke(ViewEvent.draw, canvas);
-            } else {
-                super.onDraw(canvas);
-            }
-        }
+    public ScriptedView(Context context) {
+        super(context);
     }
 
+    public void on(String event, final Function callback) {
+        callbacks.put(ViewEvent.valueOf(event), callback);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Object result = callbacks.invoke(ViewEvent.touch, event);
+        if (result != Callbacks.UNHANDLED) {
+            return ScriptRuntime.toBoolean(result);
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (callbacks.invoke(ViewEvent.draw, canvas) == Callbacks.UNHANDLED) {
+            super.onDraw(canvas);
+        }
+    }
 }

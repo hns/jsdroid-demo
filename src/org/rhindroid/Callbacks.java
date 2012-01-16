@@ -13,6 +13,8 @@ import java.util.EnumMap;
 
 public class Callbacks<T extends Enum<T>> {
 
+    public static final Object UNHANDLED = new Object();
+
     private EnumMap<T, Function> map;
 
     private Callbacks(Class<T> clazz) {
@@ -37,7 +39,7 @@ public class Callbacks<T extends Enum<T>> {
 
     public Object invoke(final T item, final Object... args) {
         if (!map.containsKey(item)) {
-            return null;
+            return UNHANDLED;
         }
         Object result = ContextFactory.getGlobal().call(new ContextAction() {
             public Object run(Context cx) {
