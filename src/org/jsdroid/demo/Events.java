@@ -5,7 +5,7 @@ package org.jsdroid.demo;
  */
 public class Events {
 
-    public enum Activity {create, retain, select, click}
+    public enum Activity {create, retain, select, click, dialog}
 
     public enum View {touch, draw}
 

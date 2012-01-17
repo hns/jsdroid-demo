@@ -12,6 +12,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Dots" android:label="JsDroid Demo: Dots"/>
+        <activity android:name=".Dialogs" android:label="JsDroid Demo: Dialogs"/>
         <activity android:name=".ViewSource" android:label="JsDroid Demo: View Source"/>
     </application>
     <uses-sdk android:minSdkVersion='5' android:targetSdkVersion='13'/>
