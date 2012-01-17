@@ -87,6 +87,7 @@ public class ScriptBuilder {
             public Object run(org.mozilla.javascript.Context cx) {
                 cx.setOptimizationLevel(-1);
                 cx.setLanguageVersion(languageVersion);
+                cx.getWrapFactory().setJavaPrimitiveWrap(false);
                 try {
                     Reader reader = new InputStreamReader(assets.open(source));
                     cx.evaluateReader(scope, reader, source, 0, null);

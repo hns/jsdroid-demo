@@ -90,6 +90,7 @@ public class Callbacks<T extends Enum<T>> {
                 Function fn = map.get(event);
                 Scriptable scope = fn.getParentScope();
                 WrapFactory wrapFactory = cx.getWrapFactory();
+                wrapFactory.setJavaPrimitiveWrap(false);
                 for (int i = 0; i < args.length; i++) {
                     args[i] = wrapFactory.wrap(cx, scope, args[i], null);
                 }
