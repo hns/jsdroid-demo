@@ -1,5 +1,5 @@
 /**
- * Main activity showing a list of available demos
+ * main.js - display a list of available demos
  */
 
 var {ArrayAdapter} = android.widget;

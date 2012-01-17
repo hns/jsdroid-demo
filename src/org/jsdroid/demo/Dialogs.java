@@ -20,9 +20,8 @@ public class Dialogs extends ListActivity implements CallbackHolder {
         setContentView(R.layout.dialogs);
         new ScriptBuilder(getAssets())
                 .defineGlobal("activity", this)
-                .evaluate("js/dialogs.js")
-                .evaluate("js/back.js")
-                .evaluate("js/viewSource.js");
+                .evaluate("js/utils.js")
+                .evaluate("js/dialogs.js");
         callbacks.invoke(Events.Activity.create, savedInstanceState);
     }
 

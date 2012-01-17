@@ -32,7 +32,7 @@ public class ViewSource extends Activity implements CallbackHolder {
         }
         new ScriptBuilder(getAssets())
                 .defineGlobal("activity", this)
-                .evaluate("js/back.js");
+                .evaluate("js/utils.js");
     }
 
     @Override

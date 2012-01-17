@@ -1,12 +1,11 @@
 /**
- * Display different kinds of alert dialogs
+ * dialogs.js - display different kinds of alert dialogs
  */
 
 var {AlertDialog, ProgressDialog} = android.app;
 var {DialogInterface} = android.content;
 var {ArrayAdapter} = android.widget;
 var {Handler} = android.os;
-var {Toast} = android.widget;
 
 var SHORT_DIALOG = 0,
     LONG_DIALOG = 1,
@@ -22,7 +21,7 @@ var items = [
 
 var listItems = ["One", "Two", "Three", "Four", "Five"];
 
-var progress, progressDialog, progressHandler;
+var progressDialog, progressHandler;
 
 activity.on("create", function(bundle) {
     var adapter = new ArrayAdapter(activity,
@@ -33,9 +32,9 @@ activity.on("create", function(bundle) {
 activity.on("click", function(item) {
     activity.showDialog(item);
 
-    // If progress dialog was clicked start a handler that increments progress
+    // for progress dialog start a handler that increments progress
     if (item === PROGRESS_DIALOG) {
-        progress = progressDialog.progress = 0;
+        progressDialog.progress = 0;
         progressHandler.sendEmptyMessageDelayed(0, 100);
     }
 });
@@ -61,12 +60,13 @@ activity.on("dialog", function(item) {
                     .setItems(listItems, listHandler)
                     .create();
         case PROGRESS_DIALOG:
-            progressDialog = new ProgressDialog(activity);
-            progressDialog.setTitle(items[item]);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setMax(100);
-            progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", cancelHandler);
-            return progressDialog;
+            var d = progressDialog = new ProgressDialog(activity);
+            d.setTitle(items[item]);
+            d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            d.setMax(100);
+            d.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                        cancelHandler);
+            return d;
     }
     return null;
 });
@@ -77,19 +77,14 @@ function okHandler(dialog, whichButton) {
 
 function cancelHandler(dialog, whichButton) {
     alert("You clicked Cancel!");
-    progress = 100; // stop progressHandler
 }
 
 function listHandler(dialog, whichButton) {
     alert("You selected '" + listItems[whichButton] + "'");
 }
 
-function alert(message) {
-    Toast.makeText(activity, String(message), Toast.LENGTH_SHORT).show();
-}
-
 progressHandler = new Handler(function(msg) {
-    if (++progress > 100) {
+    if (progressDialog.progress == 100) {
         progressDialog.dismiss();
     } else {
         progressDialog.incrementProgressBy(1);

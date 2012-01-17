@@ -18,8 +18,8 @@ public class Main extends ListActivity implements CallbackHolder {
         setContentView(R.layout.main);
         new ScriptBuilder(getAssets())
                 .defineGlobal("activity", this)
-                .evaluate("js/main.js")
-                .evaluate("js/viewSource.js");
+                .evaluate("js/utils.js")
+                .evaluate("js/main.js");
         callbacks.invoke(Events.Activity.create, savedInstanceState);
     }
 

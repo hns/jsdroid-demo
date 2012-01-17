@@ -1,9 +1,8 @@
 /*
- * Android app that paints dotted multi-touch traces using nice vivid colors.
+ * dots.js - trace touch events using colored dots.
  */
 
 var {Color, Paint} = android.graphics;
-var {Toast} = android.widget;
 
 var MAXDOTS = 100;
 var dots = [];
@@ -15,7 +14,7 @@ activity.on("create", function(bundle) {
     if (array) {
         dots = array;
     } else {
-        Toast.makeText(activity, "Touch the screen!", Toast.LENGTH_SHORT).show();
+        alert("Touch the screen!");
     }
 });
 

@@ -23,9 +23,8 @@ public class Dots extends Activity implements CallbackHolder {
         new ScriptBuilder(getAssets())
                 .defineGlobal("activity", this)
                 .defineGlobal("view", view)
-                .evaluate("js/dots.js")
-                .evaluate("js/back.js")
-                .evaluate("js/viewSource.js");
+                .evaluate("js/utils.js")
+                .evaluate("js/dots.js");
         callbacks.invoke(Events.Activity.create, savedInstanceState);
     }
 
