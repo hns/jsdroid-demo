@@ -43,7 +43,7 @@ activity.on("dialog", function(item) {
     switch (item) {
         case SHORT_DIALOG:
             return new AlertDialog.Builder(activity)
-                    .setTitle(items[item])
+                    .setMessage(items[item])
                     .setPositiveButton("OK", okHandler)
                     .setNegativeButton("Cancel", cancelHandler)
                     .create();
@@ -61,7 +61,7 @@ activity.on("dialog", function(item) {
                     .create();
         case PROGRESS_DIALOG:
             var d = progressDialog = new ProgressDialog(activity);
-            d.setTitle(items[item]);
+            d.setMessage(items[item]);
             d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             d.setMax(100);
             d.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
