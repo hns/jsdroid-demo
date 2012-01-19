@@ -42,7 +42,7 @@ public class ViewSource extends Activity implements CallbackHolder {
     }
 
     public void on(String event, Function callback) {
-        callbacks.put(Events.Activity.valueOf(event), callback);
+        callbacks.on(event, callback);
     }
 
     private String loadAsset(String path) throws IOException {

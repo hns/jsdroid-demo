@@ -29,6 +29,6 @@ public class Main extends ListActivity implements CallbackHolder {
     }
 
     public void on(String event, Function callback) {
-        callbacks.put(Events.Activity.valueOf(event), callback);
+        callbacks.on(event, callback);
     }
 }

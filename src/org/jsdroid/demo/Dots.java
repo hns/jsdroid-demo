@@ -40,7 +40,7 @@ public class Dots extends Activity implements CallbackHolder {
     }
 
     public void on(String event, final Function callback) {
-        callbacks.put(Events.Activity.valueOf(event), callback);
+        callbacks.on(event, callback);
     }
 
 }
