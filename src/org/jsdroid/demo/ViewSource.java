@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.Map;
 
 public class ViewSource extends Activity implements CallbackHolder {
 
@@ -43,6 +44,10 @@ public class ViewSource extends Activity implements CallbackHolder {
 
     public void on(String event, Function callback) {
         callbacks.on(event, callback);
+    }
+
+    public void on(Map<String, Function> eventMap) {
+        callbacks.on(eventMap);
     }
 
     private String loadAsset(String path) throws IOException {

@@ -11,6 +11,8 @@ import org.jsdroid.Callbacks;
 import org.jsdroid.ScriptBuilder;
 import org.mozilla.javascript.Function;
 
+import java.util.Map;
+
 public class Dialogs extends ListActivity implements CallbackHolder {
 
     Callbacks<Events.Activity> callbacks = Callbacks.create(Events.Activity.class);
@@ -43,5 +45,9 @@ public class Dialogs extends ListActivity implements CallbackHolder {
 
     public void on(String event, Function callback) {
         callbacks.on(event, callback);
+    }
+
+    public void on(Map<String, Function> eventMap) {
+        callbacks.on(eventMap);
     }
 }

@@ -11,6 +11,8 @@ import org.jsdroid.demo.Events;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
 
+import java.util.Map;
+
 public class ScriptedView extends View implements CallbackHolder {
 
     Callbacks<Events.View> callbacks = Callbacks.create(Events.View.class);
@@ -25,6 +27,10 @@ public class ScriptedView extends View implements CallbackHolder {
 
     public void on(String event, final Function callback) {
         callbacks.on(event, callback);
+    }
+
+    public void on(Map<String, Function> eventMap) {
+        callbacks.on(eventMap);
     }
 
     @Override

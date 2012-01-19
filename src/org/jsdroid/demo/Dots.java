@@ -9,6 +9,8 @@ import org.jsdroid.Callbacks;
 import org.jsdroid.ScriptBuilder;
 import org.mozilla.javascript.Function;
 
+import java.util.Map;
+
 
 public class Dots extends Activity implements CallbackHolder {
 
@@ -41,6 +43,10 @@ public class Dots extends Activity implements CallbackHolder {
 
     public void on(String event, final Function callback) {
         callbacks.on(event, callback);
+    }
+
+    public void on(Map<String, Function> eventMap) {
+        callbacks.on(eventMap);
     }
 
 }

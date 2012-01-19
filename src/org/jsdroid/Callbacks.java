@@ -10,6 +10,7 @@ import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.Wrapper;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * A utility class for storing and invoking callback functions. Callbacks
@@ -109,6 +110,16 @@ public class Callbacks<T extends Enum<T>> implements CallbackHolder {
      */
     public void on(String event, Function callback) {
         put(Enum.valueOf(enumClass, event), callback);
+    }
+
+    /**
+     * Register all event to callback mappings in eventMap.
+     * @param eventMap a map of event names to callback functions
+     */
+    public void on(Map<String, Function> eventMap) {
+        for (Map.Entry<String, Function> entry : eventMap.entrySet()) {
+            on(entry.getKey(), entry.getValue());
+        }
     }
 
     private static Object unwrap(Object value) {
