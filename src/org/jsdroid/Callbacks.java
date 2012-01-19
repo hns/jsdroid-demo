@@ -108,7 +108,7 @@ public class Callbacks<T extends Enum<T>> implements CallbackHolder {
      * @param callback the callback function
      */
     public void on(String event, Function callback) {
-        put(T.valueOf(enumClass, event), callback);
+        put(Enum.valueOf(enumClass, event), callback);
     }
 
     private static Object unwrap(Object value) {
