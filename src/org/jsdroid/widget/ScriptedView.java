@@ -24,7 +24,7 @@ public class ScriptedView extends View implements CallbackHolder {
     }
 
     public void on(String event, final Function callback) {
-        callbacks.put(Events.View.valueOf(event), callback);
+        callbacks.on(event, callback);
     }
 
     @Override
