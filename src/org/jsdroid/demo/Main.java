@@ -4,31 +4,27 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import org.jsdroid.CallbackHolder;
-import org.jsdroid.Callbacks;
+import org.jsdroid.EventMap;
 import org.jsdroid.ScriptBuilder;
-import org.mozilla.javascript.Function;
+import org.jsdroid.demo.events.ActivityEvent;
 
-public class Main extends ListActivity implements CallbackHolder {
+public class Main extends ListActivity {
 
-    Callbacks<Events.Activity> callbacks = Callbacks.create(Events.Activity.class);
+    EventMap<ActivityEvent> events = EventMap.create(ActivityEvent.class);
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         new ScriptBuilder(getAssets())
-                .defineGlobal("activity", this)
+                .defineEventSource("activity", this, events)
                 .evaluate("js/utils.js")
                 .evaluate("js/main.js");
-        callbacks.invoke(Events.Activity.create, savedInstanceState);
+        events.invoke(ActivityEvent.create, savedInstanceState);
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        callbacks.invoke(Events.Activity.click, Integer.valueOf(position));
+        events.invoke(ActivityEvent.click, Integer.valueOf(position));
     }
 
-    public void on(String event, Function callback) {
-        callbacks.on(event, callback);
-    }
 }

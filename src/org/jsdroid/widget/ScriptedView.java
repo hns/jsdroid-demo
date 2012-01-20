@@ -5,15 +5,13 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import org.jsdroid.CallbackHolder;
-import org.jsdroid.Callbacks;
-import org.jsdroid.demo.Events;
-import org.mozilla.javascript.Function;
+import org.jsdroid.EventMap;
+import org.jsdroid.demo.events.ViewEvent;
 import org.mozilla.javascript.ScriptRuntime;
 
-public class ScriptedView extends View implements CallbackHolder {
+public class ScriptedView extends View {
 
-    Callbacks<Events.View> callbacks = Callbacks.create(Events.View.class);
+    public EventMap<ViewEvent> events = EventMap.create(ViewEvent.class);
 
     public ScriptedView(Context context) {
         super(context);
@@ -23,14 +21,10 @@ public class ScriptedView extends View implements CallbackHolder {
         super(context, attrs);
     }
 
-    public void on(String event, final Function callback) {
-        callbacks.on(event, callback);
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Object result = callbacks.invoke(Events.View.touch, event);
-        if (result != Callbacks.UNHANDLED) {
+        Object result = events.invoke(ViewEvent.touch, event);
+        if (result != EventMap.UNHANDLED) {
             return ScriptRuntime.toBoolean(result);
         }
         return super.onTouchEvent(event);
@@ -38,7 +32,7 @@ public class ScriptedView extends View implements CallbackHolder {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (callbacks.invoke(Events.View.draw, canvas) == Callbacks.UNHANDLED) {
+        if (events.invoke(ViewEvent.draw, canvas) == EventMap.UNHANDLED) {
             super.onDraw(canvas);
         }
     }

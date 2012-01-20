@@ -5,19 +5,18 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.jsdroid.CallbackHolder;
-import org.jsdroid.Callbacks;
+import org.jsdroid.EventMap;
 import org.jsdroid.ScriptBuilder;
-import org.mozilla.javascript.Function;
+import org.jsdroid.demo.events.ActivityEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
-public class ViewSource extends Activity implements CallbackHolder {
+public class ViewSource extends Activity {
 
-    Callbacks<Events.Activity> callbacks = Callbacks.create(Events.Activity.class);
+    EventMap<ActivityEvent> events = EventMap.create(ActivityEvent.class);
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +30,14 @@ public class ViewSource extends Activity implements CallbackHolder {
             Toast.makeText(this, "Error loading source code", Toast.LENGTH_SHORT).show();
         }
         new ScriptBuilder(getAssets())
-                .defineGlobal("activity", this)
+                .defineEventSource("activity", this, events)
                 .evaluate("js/utils.js");
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        callbacks.invoke(Events.Activity.select, menuItem);
+        events.invoke(ActivityEvent.select, menuItem);
         return super.onOptionsItemSelected(menuItem);
-    }
-
-    public void on(String event, Function callback) {
-        callbacks.on(event, callback);
     }
 
     private String loadAsset(String path) throws IOException {

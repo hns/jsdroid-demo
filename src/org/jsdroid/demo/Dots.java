@@ -3,44 +3,39 @@ package org.jsdroid.demo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import org.jsdroid.CallbackHolder;
-import org.jsdroid.Callbacks;
+import org.jsdroid.EventMap;
 import org.jsdroid.ScriptBuilder;
-import org.mozilla.javascript.Function;
+import org.jsdroid.demo.events.ActivityEvent;
+import org.jsdroid.widget.ScriptedView;
 
 
-public class Dots extends Activity implements CallbackHolder {
+public class Dots extends Activity {
 
-    Callbacks<Events.Activity> callbacks = Callbacks.create(Events.Activity.class);
+    EventMap<ActivityEvent> events = EventMap.create(ActivityEvent.class);
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dots);
-        View view = findViewById(R.id.view);
+        ScriptedView view = (ScriptedView)findViewById(R.id.view);
         new ScriptBuilder(getAssets())
-                .defineGlobal("activity", this)
-                .defineGlobal("view", view)
+                .defineEventSource("activity", this, events)
+                .defineEventSource("view", view, view.events)
                 .evaluate("js/utils.js")
                 .evaluate("js/dots.js");
-        callbacks.invoke(Events.Activity.create, savedInstanceState);
+        events.invoke(ActivityEvent.create, savedInstanceState);
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return callbacks.invoke(Events.Activity.retain);
+        return events.invoke(ActivityEvent.retain);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        callbacks.invoke(Events.Activity.select, menuItem);
+        events.invoke(ActivityEvent.select, menuItem);
         return super.onOptionsItemSelected(menuItem);
-    }
-
-    public void on(String event, final Function callback) {
-        callbacks.on(event, callback);
     }
 
 }

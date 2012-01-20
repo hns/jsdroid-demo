@@ -17,14 +17,14 @@ import java.util.EnumMap;
  *
  * @param <T> the enum specifying the supported event types
  */
-public class Callbacks<T extends Enum<T>> implements CallbackHolder {
+public class EventMap<T extends Enum<T>> {
 
     public static final Object UNHANDLED = new Object();
 
     private EnumMap<T, Function> map;
     Class<T> enumClass;
 
-    private Callbacks(Class<T> c) {
+    private EventMap(Class<T> c) {
         enumClass = c;
         map = new EnumMap<T, Function>(c);
     }
@@ -35,8 +35,8 @@ public class Callbacks<T extends Enum<T>> implements CallbackHolder {
      * @param <T> the enum type parameter
      * @return an empty Callbacks object
      */
-    public static <T extends Enum<T>> Callbacks<T> create(Class<T> c) {
-        return new Callbacks<T>(c);
+    public static <T extends Enum<T>> EventMap<T> create(Class<T> c) {
+        return new EventMap<T>(c);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Callbacks<T extends Enum<T>> implements CallbackHolder {
      * @param event the event name
      * @param callback the callback function
      */
-    public void on(String event, Function callback) {
+    public void addListener(String event, Function callback) {
         put(Enum.valueOf(enumClass, event), callback);
     }
 
